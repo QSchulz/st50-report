@@ -1,0 +1,28 @@
+\chapter{Linux kernel continuous integration}
+\section{Context}
+
+Presentation of Linux (what is it, role of OSS, community, subsystems, maintainers)
+FE projects => upstreaming, product-tracking for clients, contribute to KernelCI project <= why CI
+goals => custom tests, building a lab from scratch for not too much money
+
+\section{State of the art}
+unable to track all boards for all kernel versions
+role of maintainers is to guarantee (or at least try to) the stability of old features and the working of new features => hard to track
+answers from community is relatively slow = s.o. has to have the board to test the kernel (build the kernel with the same config etc...)
+regressions are often detected on the go (hidden until someone uses the functionality)
+unable to test features on all boards in the world
+loss of time for rebuilding the kernel and setting the board each time someone needs help
+
+\section{Project}
+
+\section{Challenges encountered}
+Bootloader updates (the process of updating or the impossibility to update => no bootz, no DHCP)
+LAVA migration (v1->v2 no doc)
+hardware problems (serial)
+
+\section{Conclusion}
+status of the tasks
+=> no custom tests
+=> miss half of the lab
+=> some stats (number of boot tests)
+=> project used by the engineers
