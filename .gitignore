@@ -1,0 +1,16 @@
+*.pdf
+*.pyg
+*.snm
+*.toc
+*.vrb
+*.aux
+*.nav
+*.out
+*.dia~
+*.log
+*.lof
+cover/*.pdf
+tex/*.aux
+tex/*.out
+tex/*.log
+tex/*.lof
