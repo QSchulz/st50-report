@@ -14,3 +14,5 @@ tex/*.aux
 tex/*.out
 tex/*.log
 tex/*.lof
+
+_minted*/
