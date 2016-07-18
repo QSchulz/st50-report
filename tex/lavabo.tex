@@ -1,17 +1,41 @@
 \chapter{Lavabo - LAVA Board Overseer}
-
 \section{Context}
-boards only owned once
-lab takes full control of the board so why not us from remote? <= teleworking (Alex, Greg and others)
-continuous work on the board
-goals => takes control of the board remotely (serial, power, files)
 
-\section{State of the art}
-mandatory to unplug the board and put physically outside of the lab the boards
-send by postal way to Greg or Alex if needed or need to take it with you when travelling
+Free Electrons sometimes owns only one copy of a board. We want to automatically test new kernels via LAVA and KernelCI on this board but we might also have to work once in a while on the said board. Before lavabo being developed, engineers had had to physically remove the board from the board and replug all the cables on their desk. This is a wrong process because while the board is outside of the lab, the new kernels are not tested on it.
+
+At the moment, we have two engineers teleworking far from our Toulouse offices. These engineers might as well work on the board we own only once meaning we have to send them by postal way. Some other engineers also telework from time to time due to business travel and in that case, they would have to take the board (and the needed cables and power supply) with them. Since our lab works in a completely autonomous manner, we wondered if we could not take control of the lab remotely so anyone from Free Electrons could access the boards in the lab from anywhere.
+
+The goal of lavabo is to take full remote control of the boards as it is done in LAVA: interface with the serial, control the power supply and serve files to the board. This software also has to be fully compatible with LAVA.
 
 \section{Project}
 
+If we want to take full control of a board outside of LAVA, we first have to notify LAVA the board is not available for new jobs until further notice. As detailed in the previous chapter, \textit{Linux kernel continuous integration}, LAVA looks amongst its dispatchers for available devices and if no device is available, drops the jobs it wanted to perform on this device. LAVA has an API to interact with it from external software so we could use it to \textit{put offline} a board.
+
+Since LAVA already has all means to control the board, we can use the same tools used by LAVA and the configuration file of each board in lavabo to control the board.
+
+\subsection{Implementation}
+
+Interaction between client and server: client connects via SSH to the server, SSH command limits to only one command a user, custom command per SSH key, but we want different commands to be executed => server listens/writes on stdio, client writes/listens on server's stdio via SSH
+
+Interaction between LAVA and server: LAVA API = reserve/release a board (adding those endpoints), status (+SQLite); LAVA configuration files = serial connection port, power control commands, list boards by listing files in LAVA configuration files' directory
+
+Send files via SFTP in LAVA TFTP directory
+
+Serial => SSH port forwarding without shell + telnet on local session
+
+one engineer at a time
+autocompletion
+
+\subsection{Typical workflow}
+
+list
+reserve
+upload
+serial
+reset
+pwoer-off
+release
+
 \section{Conclusion}
-improvments => NFS, serial connection automatically closed
+improvments => NFS, serial connection automatically closed, board outside of the lab for too long 
 used by engineers
