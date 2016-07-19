@@ -39,7 +39,10 @@ Continuous integration is made up of three different steps:
   \item reporting the tests results;
 \end{itemize}
 
-\includegraphics[width=\textwidth]{kernel-ci-overview.png}
+\begin{figure}[H]
+  \includegraphics[width=\textwidth]{kernel-ci-overview.png}
+  \caption{KernelCI complete process}
+\end{figure}
 
 \subsection{Building the kernel}
 
@@ -95,7 +98,10 @@ The following is a rough explanation on how LAVA runs the tests:
   \item LAVA dispatcher saves all records, marks device2 as available and sends test results to LAVA server which stores them;
 \end{itemize}
 
-\includegraphics[width=\textwidth]{user-server-dispatcher.png}
+\begin{figure}[H]
+  \includegraphics[width=\textwidth]{user-server-dispatcher.png}
+  \caption{LAVA server and dispatcher complete process}
+\end{figure}
 
 As you can see, everything is automated only after the user has sent the job. Yet, to achieve full automation, we have to automate the sending of jobs too which is made possible thanks to LAVA's API. Now, the only remaining barrier is to build kernels on git notifications or crontabs for example, create tests and send them to LAVA via its API.
 
