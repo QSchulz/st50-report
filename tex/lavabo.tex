@@ -36,16 +36,16 @@ The last requirement is to serve files to the board. Again, LAVA already has a m
 
 There are two means for automatic execution of a code when connecting in SSH:
 \begin{itemize}
-  \item \textit{ssh user@lavabo.server.com "my\_command"}
+  \item \mintinline[bgcolor=grey]{bash}{ssh user@lavabo.server.com "my_command"}
 
-This has to be done on client side and specifies to SSH to execute "my\_command" when connected to the remote. This is a serious security hazard because we do not control what kind of command can be executed in the remote (even if it is not run from root).
+This has to be done on client side and specifies to SSH to execute \mintinline[bgcolor=grey]{bash}{my_command} when connected to the remote. This is a serious security hazard because we do not control what kind of command can be executed in the remote (even if it is not run from root).
 
   \item use \textit{authorized\_keys} configuration file of ssh with a fixed command to execute
 
 This is set on server side but allows only one command to be set and needs SSH keys of the computer from which the user is trying to connect to the server machine. This command will be executed everytime a user is connected via SSH.
 \end{itemize}
 
-We obvioulsy chose the second option for security reasons but it also brings an interesting feature: authentication. With the SSH keys, we can now identify who is connected to the server machine and customize the executed command depending on the user. This allows to have a multi-user management. However, this restricts the number of possible commands to be run to only one. scp is not possible when a command is set in authorized\_keys but SFTP is possible when the subsystem sftp is enabled in the configuration of OpenSSH. Trying to connect to the server machine via sftp will actually use the following command to connect: \textit{ssh user@lavabo.server.com internal-sftp}. Fortunately, in the \textit{authorized\_keys} configuration file, it is possible to retrieve everything that is written after \textit{ssh user@lavabo.server.com} with the \textit{\$SSH\_ORIGINAL\_COMMAND} variable\footnote{\url{http://unixwars.blogspot.fr/2014/12/getting-sshoriginalcommand.html}}. Still, the SFTP server needs to be started but we can only have one command to run. Therefore, we pass \textit{\$SSH\_ORIGINAL\_COMMAND} to lavabo's server part as a parameter and spawns the SFTP server in a subprocess of lavabo's server.\\
+We obvioulsy chose the second option for security reasons but it also brings an interesting feature: authentication. With the SSH keys, we can now identify who is connected to the server machine and customize the executed command depending on the user. This allows to have a multi-user management. However, this restricts the number of possible commands to be run to only one. scp is not possible when a command is set in authorized\_keys but SFTP is possible when the subsystem sftp is enabled in the configuration of OpenSSH. Trying to connect to the server machine via sftp will actually use the following command to connect: \mintinline[bgcolor=grey]{bash}{ssh user@lavabo.server.com internal-sftp}. Fortunately, in the \textit{authorized\_keys} configuration file, it is possible to retrieve everything that is written after \mintinline[bgcolor=grey]{bash}{ssh user@lavabo.server.com} with the \mintinline[bgcolor=grey]{bash}{$SSH_ORIGINAL_COMMAND} variable\footnote{\url{http://unixwars.blogspot.fr/2014/12/getting-sshoriginalcommand.html}}. Still, the SFTP server needs to be started but we can only have one command to run. Therefore, we pass \mintinline[bgcolor=grey]{bash}{$SSH_ORIGINAL_COMMAND} to lavabo's server part as a parameter and spawns the SFTP server in a subprocess of lavabo's server.\\
 There is a small subtility for the SSH port-forwarding needed to connect to the serial of a board: the command is called even when willing to do only port-forwarding. After some investigation, it turned out the command is run only when the SSH connection is spawning a shell. Fortunately, we do not need a shell on the SSH remote to do port-forwarding so we just had to avoid to spawn a shell with the \textit{-N} argument\footnote{\url{http://linux.die.net/man/1/ssh}} when executing the SSH command in the client.
 
 Since the serial cannot be shared among several sessions, it is essential to guarantee a board can only be used by one engineer at a time. We already have the authentication by SSH key but we need a way to keep track of the user currently using the board to deny access to any new request from other users on this board. To perform such mechanism, we use a small SQLite database. When several engineers work with lavabo, they also have a separate TFTP upload directory so it is easy to know which files to serve to the board.
@@ -53,22 +53,18 @@ Since the serial cannot be shared among several sessions, it is essential to gua
 \subsection{Typical workflow}
 
 \begin{enumerate}
-  \item \textit{lavabo list}, to get the list of boards in the lab,
-  \item \textit{lavabo reserve am335x-boneblack\_01}, to put the board named \textit{am335x-boneblack\_01} virtually outside of the lab (offline in LAVA),
-  \item \textit{lavabo upload kernel}, to upload the file name \textit{kernel} in the user's TFTP directory,
-  \item \textit{lavabo serial am335x-boneblack\_01}, to connect to the board named \textit{am335x-boneblack\_01},
-  \item \textit{lavabo reset am335x-boneblack\_01}, to reset power of the board named \textit{am335x-boneblack\_01},
-  \item \textit{lavabo power-off am335x-boneblack\_01}, to power off the board named \textit{am335x-boneblack\_01},
-  \item \textit{lavabo release am335x-boneblack\_01}, to virtually put back the board named \textit{am335x-boneblack\_01} in the lab (online in LAVA);
+  \item \mintinline[bgcolor=grey]{bash}{lavabo list}, to get the list of boards in the lab,
+  \item \mintinline[bgcolor=grey]{bash}{lavabo reserve am335x-boneblack_01}, to put the board named \textit{am335x-boneblack\_01} virtually outside of the lab (offline in LAVA),
+  \item \mintinline[bgcolor=grey]{bash}{lavabo upload kernel}, to upload the file name \textit{kernel} in the user's TFTP directory,
+  \item \mintinline[bgcolor=grey]{bash}{lavabo serial am335x-boneblack_01}, to connect to the board named \textit{am335x-boneblack\_01},
+  \item \mintinline[bgcolor=grey]{bash}{lavabo reset am335x-boneblack_01}, to reset power of the board named \textit{am335x-boneblack\_01},
+  \item \mintinline[bgcolor=grey]{bash}{lavabo power-off am335x-boneblack_01}, to power off the board named \textit{am335x-boneblack\_01},
+  \item \mintinline[bgcolor=grey]{bash}{lavabo release am335x-boneblack_01}, to virtually put back the board named \textit{am335x-boneblack\_01} in the lab (online in LAVA);
 \end{enumerate}
 
-It is possible to use autocompletion to get the name of a board or to store the name of the board in an environment variable name \textit{LAVABO\_BOARD} with the following line:
-
-\begin{minted}{bash}
-export LAVABO_BOARD=am335x-boneblack_01
-\end{minted}
+It is possible to use autocompletion to get the name of a board or to store the name of the board in an environment variable name \mintinline[bgcolor=grey]{bash}{LAVABO_BOARD} with the following line: \mintinline[bgcolor=grey]{bash}{export LAVABO_BOARD=am335x-boneblack_01}
 
 \section{Conclusion}
 This tool is available on the company's GitHub\footnote{\url{https://github.com/free-electrons/lavabo}} and has already been used a fair number of times by the Free Electrons' engineers.
 
-However, there are some possible improvments\footnote{\url{https://github.com/free-electrons/lavabo/issues}}. In the lab, there are some boards which cannot boot with a root filesystem in RAM but can when using a root filesystem mounted over NFS. However, there is no possibility yet to add an NFS directory to the server machine from lavabo. This problem prevents the use of these boards via lavabo. When following the typical workflow, engineers often forgot to stop \textit{lavabo serial am335x-boneblack\_01} which means they keep the serial connection open and nobody can use it even if the board is marked as available.
+However, there are some possible improvments\footnote{\url{https://github.com/free-electrons/lavabo/issues}}. In the lab, there are some boards which cannot boot with a root filesystem in RAM but can when using a root filesystem mounted over NFS. However, there is no possibility yet to add an NFS directory to the server machine from lavabo. This problem prevents the use of these boards via lavabo. When following the typical workflow, engineers often forgot to stop \mintinline[bgcolor=grey]{bash}{lavabo serial am335x-boneblack_01} which means they keep the serial connection open and nobody can use it even if the board is marked as available.
