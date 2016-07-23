@@ -36,7 +36,7 @@ The last requirement is to serve files to the board. Again, LAVA already has a m
 
 There are two means for automatic execution of a code when connecting in SSH:
 \begin{itemize}
-  \item \mintinline[bgcolor=grey]{bash}{ssh user@lavabo.server.com "my_command"}
+  \item \mintinline[bgcolor=grey]{console}{$ ssh user@lavabo.server.com "my_command"}
 
 This has to be done on client side and specifies to SSH to execute \mintinline[bgcolor=grey]{bash}{my_command} when connected to the remote. This is a serious security hazard because we do not control what kind of command can be executed in the remote (even if it is not run from root).
 
@@ -53,18 +53,18 @@ Since the serial cannot be shared among several sessions, it is essential to gua
 \subsection{Typical workflow}
 
 \begin{enumerate}
-  \item \mintinline[bgcolor=grey]{bash}{lavabo list}, to get the list of boards in the lab,
-  \item \mintinline[bgcolor=grey]{bash}{lavabo reserve am335x-boneblack_01}, to put the board named \textit{am335x-boneblack\_01} virtually outside of the lab (offline in LAVA),
-  \item \mintinline[bgcolor=grey]{bash}{lavabo upload kernel}, to upload the file name \textit{kernel} in the user's TFTP directory,
-  \item \mintinline[bgcolor=grey]{bash}{lavabo serial am335x-boneblack_01}, to connect to the board named \textit{am335x-boneblack\_01},
-  \item \mintinline[bgcolor=grey]{bash}{lavabo reset am335x-boneblack_01}, to reset power of the board named \textit{am335x-boneblack\_01},
-  \item \mintinline[bgcolor=grey]{bash}{lavabo power-off am335x-boneblack_01}, to power off the board named \textit{am335x-boneblack\_01},
-  \item \mintinline[bgcolor=grey]{bash}{lavabo release am335x-boneblack_01}, to virtually put back the board named \textit{am335x-boneblack\_01} in the lab (online in LAVA);
+  \item \mintinline[bgcolor=grey]{console}{$ lavabo list}, to get the list of boards in the lab,
+  \item \mintinline[bgcolor=grey]{console}{$ lavabo reserve am335x-boneblack_01}, to put the board named \textit{am335x-boneblack\_01} virtually outside of the lab (offline in LAVA),
+  \item \mintinline[bgcolor=grey]{console}{$ lavabo upload kernel}, to upload the file name \textit{kernel} in the user's TFTP directory,
+  \item \mintinline[bgcolor=grey]{console}{$ lavabo serial am335x-boneblack_01}, to connect to the board named \textit{am335x-boneblack\_01},
+  \item \mintinline[bgcolor=grey]{console}{$ lavabo reset am335x-boneblack_01}, to reset power of the board named \textit{am335x-boneblack\_01},
+  \item \mintinline[bgcolor=grey]{console}{$ lavabo power-off am335x-boneblack_01}, to power off the board named \textit{am335x-boneblack\_01},
+  \item \mintinline[bgcolor=grey]{console}{$ lavabo release am335x-boneblack_01}, to virtually put back the board named \textit{am335x-boneblack\_01} in the lab (online in LAVA);
 \end{enumerate}
 
-It is possible to use autocompletion to get the name of a board or to store the name of the board in an environment variable name \mintinline[bgcolor=grey]{bash}{LAVABO_BOARD} with the following line: \mintinline[bgcolor=grey]{bash}{export LAVABO_BOARD=am335x-boneblack_01}
+It is possible to use autocompletion to get the name of a board or to store the name of the board in an environment variable name \mintinline[bgcolor=grey]{bash}{LAVABO_BOARD} with the following line: \mintinline[bgcolor=grey]{console}{$ export LAVABO_BOARD=am335x-boneblack_01}
 
 \section{Conclusion}
 This tool is available on the company's GitHub\footnote{\url{https://github.com/free-electrons/lavabo}} and has already been used a fair number of times by the Free Electrons' engineers.
 
-However, there are some possible improvments\footnote{\url{https://github.com/free-electrons/lavabo/issues}}. In the lab, there are some boards which cannot boot with a root filesystem in RAM but can when using a root filesystem mounted over NFS. However, there is no possibility yet to add an NFS directory to the server machine from lavabo. This problem prevents the use of these boards via lavabo. When following the typical workflow, engineers often forgot to stop \mintinline[bgcolor=grey]{bash}{lavabo serial am335x-boneblack_01} which means they keep the serial connection open and nobody can use it even if the board is marked as available.
+However, there are some possible improvments\footnote{\url{https://github.com/free-electrons/lavabo/issues}}. In the lab, there are some boards which cannot boot with a root filesystem in RAM but can when using a root filesystem mounted over NFS. However, there is no possibility yet to add an NFS directory to the server machine from lavabo. This problem prevents the use of these boards via lavabo. When following the typical workflow, engineers often forgot to stop \mintinline[bgcolor=grey]{console}{$ lavabo serial am335x-boneblack_01} which means they keep the serial connection open and nobody can use it even if the board is marked as available.

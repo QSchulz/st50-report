@@ -220,14 +220,14 @@ For the ATMEL AT91SAMA5D2 Xplained:
 \begin{itemize}
   \item This creates jobs associated to the board in ./jobs
 
-\begin{minted}[linenos=true,bgcolor=grey,numberblanklines=true,breaklines=true]{bash}
-./lava-kernel-ci-job-creator.py http://storage.kernelci.org/next/next-20150114/ --plans boot --targets at91-sama5d2_xplained
+\begin{minted}[linenos=true,bgcolor=grey,numberblanklines=true,breaklines=true]{console}
+$ ./lava-kernel-ci-job-creator.py http://storage.kernelci.org/next/next-20150114/ --plans boot --targets at91-sama5d2_xplained
 \end{minted}
 
   \item and this will send the jobs to our LAVA server.
 
-\begin{minted}[linenos=true,bgcolor=grey,numberblanklines=true,breaklines=true]{bash}
-./lava-job-runner.py --username LAVA_USERNAME --token LAVA_TOKEN --server LAVA_SERVER --stream /anonymous/mybundle/
+\begin{minted}[linenos=true,bgcolor=grey,numberblanklines=true,breaklines=true]{console}
+$ ./lava-job-runner.py --username LAVA_USERNAME --token LAVA_TOKEN --server LAVA_SERVER --stream /anonymous/mybundle/
 \end{minted}
 
   \item Then we need to follow the jobs' status and make sure they succeed before sending a patch for the added support of the board to KernelCI.
