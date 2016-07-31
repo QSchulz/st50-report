@@ -1,7 +1,7 @@
 \chapter{Lavabo - LAVA Board Overseer}
 \section{Context}
 
-Free Electrons sometimes owns only one copy of a board. We want to automatically test new kernels via LAVA and KernelCI on this board but we might also have to work once in a while on the said board. Before lavabo being developed, engineers had had to physically remove the board from the board and replug all the cables on their desk. This is a wrong process because while the board is outside of the lab, the new kernels are not tested on it.
+Free Electrons sometimes owns only one copy of a board. We want to automatically test new kernels via LAVA and KernelCI on this board but we might also have to work once in a while on the said board. Before lavabo being developed, engineers had had to physically remove the board from the lab and replug all the cables on their desk. This is not an ideal process because, while the board is outside of the lab, the new kernels are not tested on it.
 
 At the moment, we have two engineers teleworking far from our Toulouse offices. These engineers might as well work on the board we own only once meaning we have to send them by postal way. Some other engineers also telework from time to time due to business travel and in that case, they would have to take the board (and the needed cables and power supply) with them. Since our lab works in a completely autonomous manner, we wondered if we could not take control of the lab remotely so anyone from Free Electrons could access the boards in the lab from anywhere.
 
@@ -9,19 +9,19 @@ The goal of lavabo is to take full remote control of the boards as it is done in
 
 \section{Project}
 
-If we want to take full control of a board outside of LAVA, we first have to notify LAVA the board is not available for new jobs until further notice. As detailed in the previous chapter, \textit{Linux kernel continuous integration}, LAVA looks amongst its dispatchers for available devices and if no device is available, drops the jobs it wanted to perform on this device. LAVA has an API to interact with from external software so we could use it to \textit{put offline} a board.
+If we want to take full control of a board outside of LAVA, we first have to notify LAVA the board is not available for new jobs until further notice. LAVA looks amongst its dispatchers for online and available devices and if no device is online, drops the jobs it wanted to perform on this device. If there is a device online but is busy, LAVA queues the job. LAVA has an API to interact with  we could use to \textit{put offline} or \textit{online} a board.
 
 Since LAVA already has all means to control the board, we can use the same tools used by LAVA and the configuration file of each board in lavabo to control the board.
 
 \subsection{Implementation}
 
-lavabo is a two parts software: a client installed on all engineers' laptop and a server host on the same machine as LAVA. This allows us to use the server part as a bridge to reuse the same tools as LAVA.
+lavabo is a two parts software: a client installed on all engineers' laptop and a server host on the same machine as LAVA. This allows us to use the server part as a bridge to the host to reuse the same tools as LAVA.
 
 All lavabo's logic is in the server part which takes care of calling the right tools directly on the server machine and making the right calls to LAVA's API. It controls the boards and interacts with the LAVA instance to reserve and release a board. The server side of lavabo will be called everytime someone logs in the server machine with a certain user via SSH. Its interaction means are its standard input (stdin) and its standard output (stdout) like any other basic software. It receives the commands on stdin and sends the return code or answer to stdout.
 
 The client is basically connecting via SSH on the server machine with a given user and sending the orders to the server which translates it into commands to execute or calls to make to LAVA's API. Since the client will be connected via SSH on the server with the right user, the server part of lavabo will be executed and the client will interact with the server by writing on server's stdin and reading on server's stdout. This behaviour is borrowed from Attic\footnote{\url{https://attic-backup.org/}}. The communication is done via JSON dictionaries so it is easy to parse.
 
-This is perfect for all interactions except the ones that need a continuous stream of data like the serial connection. Writing a terminal functioning through TCP sockets is extremely difficult, but since we have ser2net exposing serial connections on telnet ports on the server machine, we could do SSH port-forwarding to redirect these telnet ports to ports on engineers' laptop and open a local telnet process connecting to this local port.
+This is perfect for all interactions except the ones that need a continuous stream of data like the serial connection. Writing a terminal functioning through TCP sockets is extremely difficult, but since we already have ser2net exposing serial connections on telnet ports on the server machine, we could do SSH port-forwarding to redirect these telnet ports to ports on engineers' laptop and open a local telnet process connecting to this local port.
 
 \begin{figure}[H]
   \includegraphics[width=\textwidth]{lavabo-device-port-local_port.png}
@@ -30,11 +30,11 @@ This is perfect for all interactions except the ones that need a continuous stre
 
 To use a board outside of LAVA, we have to interact with LAVA to tell him it cannot be used anymore. This can be done via its API but there were no API endpoints for \textit{putting offline} (reserve) or \textit{putting online} (release) a board. I therefore had to work with LAVA developers to add these endpoints\footnote{\url{https://github.com/Linaro/lava-server/commit/2091ac9c3f9305f5a4e083d156c04d1f098ac2fa}}\footnote{\url{https://github.com/Linaro/lava-server/commit/6da3b4abf0c8a66f746f5a9264fc6ae4ad01f9fc}} and an endpoint to get the current status of a board (busy, idle, offline)\footnote{\url{https://github.com/Linaro/lava-server/commit/0d7742db6462fa5c8117556c46b1ce7ec41eda7e}} in LAVA's API.
 
-Now that we know how the client and the server interact and also how the server communicates with LAVA, we need a way to know which boards are in the lab, on which port the serial connection of a board is exposed and what are the commands to control the board's power. Fortunately, all this configuration has already been done in LAVA. To get the list of the available devices, one only needs to list all the files in LAVA devices' configuration file directory. In these configuration file, we can also find all we need to know: what is the port on which the serial connection is exposed, which command to execute to power off and on a board's power. Therefore, lavabo server part lists and reads LAVA configuration files to avoid duplication of code or configuration.
+Now that we know how the client and the server interact and also how the server communicates with LAVA, we need a way to know which boards are in the lab, on which port the serial connection of a board is exposed and what are the commands to control the board's power. Fortunately, all this configuration has already been done in LAVA. To get the list of the available devices, one only needs to list all the files in LAVA devices' configuration file directory. In these configuration file, we can also find all we need to know: what is the port on which the serial connection is exposed, which command to execute to power off and on a board's power. Therefore, lavabo's server part lists and reads LAVA configuration files to avoid duplication of code or configuration.
 
-The last requirement is to serve files to the board. Again, LAVA already has a mechanism for serving files to board: it has a directory accessible through TFTP from the boards. Therefore, the obvious way is to send files from the client to the server and move the files to this directory. We could use either scp or SFTP for this mission. We went with the latter for reasons we expose in the next paragraph.
+The last requirement is to serve files to the board. Again, LAVA already has a directory accessible through TFTP from the boards which is the mechanism used to serve files to boards. Therefore, the easiest and most obvious way is to send files from the client to the server and move the files to this directory. We could use either scp or SFTP for this mission. We went with the latter for reasons we expose in the next paragraph.
 
-There are two means for automatic execution of a code when connecting in SSH:
+As explained earlier, we want the server part of lavabo to be automatically launched when a user connects via SSH to the server machine and there are only two means for automatic execution of a code when connecting in SSH:
 \begin{itemize}
   \item \mintinline[bgcolor=grey]{console}{$ ssh user@lavabo.server.com "my_command"}
 
@@ -67,4 +67,4 @@ It is possible to use autocompletion to get the name of a board or to store the 
 \section{Conclusion}
 This tool is available on the company's GitHub\footnote{\url{https://github.com/free-electrons/lavabo}} and has already been used a fair number of times by the Free Electrons' engineers.
 
-However, there are some possible improvments\footnote{\url{https://github.com/free-electrons/lavabo/issues}}. In the lab, there are some boards which cannot boot with a root filesystem in RAM but can when using a root filesystem mounted over NFS. However, there is no possibility yet to add an NFS directory to the server machine from lavabo. This problem prevents the use of these boards via lavabo. When following the typical workflow, engineers often forgot to stop \mintinline[bgcolor=grey]{console}{$ lavabo serial am335x-boneblack_01} which means they keep the serial connection open and nobody can use it even if the board is marked as available.
+However, there are some possible improvments\footnote{\url{https://github.com/free-electrons/lavabo/issues}}. In the lab, there are some boards which can boot only when using a root filesystem mounted over NFS. However, there is no possibility yet to add an NFS directory to the server machine from lavabo. This problem prevents the use of these boards via lavabo. When following the typical workflow, engineers often forgot to stop \mintinline[bgcolor=grey]{console}{$ lavabo serial am335x-boneblack_01} which means they keep the serial connection open and nobody can use it even if the board is marked as available.

@@ -13,12 +13,19 @@
 \usepackage{minted}
 \definecolor{grey}{rgb}{0.9,0.9,0.9}
 
+%Remove "Chapter" and inline chapter number and title for each chapter
+\makeatletter
+\renewcommand{\@makechapterhead}[1]{%
+{\setlength{\parindent}{0pt} \raggedright \normalfont
+\bfseries\Huge\thechapter.\ #1
+\par\nobreak}}
+\makeatother
+
 \usepackage{graphicx,xcolor}
 \graphicspath{{images/}}
 \usepackage{eurosym}
 \usepackage{geometry}
 \geometry{hmargin=3cm,vmargin=4cm}
-
 
 \usepackage{url}
 
