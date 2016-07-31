@@ -2,9 +2,23 @@
 
 \begin{itemize}
 \item System on Chip (SoC):
+
+A system on a chip or system on chip (SoC or SOC) is an integrated circuit (IC) that integrates all components of a computer or other electronic system into a single chip. It may contain digital, analog, mixed-signal, and often radio-frequency functions—all on a single chip substrate. \href{https://en.wikipedia.org/wiki/System\_on\_a\_chip}{\textit{Wikipedia}}
+
 \item Bootloader:
+
+When a computer is turned off, its software - including operating systems, application code, and data - remains stored on non-volatile memory. When the computer is powered on, it typically does not have an operating system or its loader in random access memory (RAM). The computer first executes a relatively small program stored in read-only memory (ROM) along with a small amount of needed data, to access the nonvolatile device or devices from which the operating system programs and data can be loaded into RAM. This small program's only job is to load other data and programs which are then executed from RAM. \href{https://en.wikipedia.org/wiki/Booting\#BOOT-LOADER}{\textit{Wikipedia}}
+
 \item Root filesystem (rootfs):
+
+The root filesystem is the filesystem where the root directory is located and on which other filesystems might be mounted. The root filesystem contains the files needed for booting the system and in a state from which it is possible to mount other filesystems.
+
 \item mainline, upstream:
-\item ADC:
-\item user-space:
+
+Refers to the official current version of a software - the Linux kernel for example - being developed. Mainlining or upstreaming is the process of adding code to the software's mainline version from \url{kernel.org}. This is not as straight-forward as it seems since only maintainers of Linux kernel validate code and are the only ones who can add code to the source code.
+
+\item user space:
+
+The operating system usually split virtual memory between the kernel space and the user space. The kernel space is used by the operating system kernel and for most drivers. The user space is the memory area where programs and the rest of drivers run.
+
 \end{itemize}
