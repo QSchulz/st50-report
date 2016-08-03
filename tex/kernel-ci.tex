@@ -1,25 +1,34 @@
 \chapter{Linux kernel continuous integration}
 \section{Context}
 \subsection{Linux}
-Linux is an operating system kernel (or simply kernel) created by Linus Torvalds and its source code was released in 1991 under a Free and Open Source license. After requests to remove the limitation on commercialization established by the current license, he ultimately released the source code under the GPL license\footnote{\url{https://www.kernel.org/pub/linux/kernel/Historic/old-versions/RELNOTES-0.12}} in 1992. Its quick fame is due to Linux being the first kernel to be fully modifiable, redistributable, commercializable and with all its source code released.
+Linux is an operating system kernel (or simply kernel) created by Linus Torvalds and its source code was released in 1991 under a Free and Open Source license. After requests to remove the limitation on commercialization established by the current license, he ultimately released the source code under the GPL license\footnote{\url{https://www.kernel.org/pub/linux/kernel/Historic/old-versions/RELNOTES-0.12}} in 1992.
 
 The Linux kernel is the biggest Open Source software with its 21 millions lines of code, 4000 contributors and several thousands of supported architectures. Such a big project needs people which are garants of the quality of the code and the respect of different rules (such as the coding style for example). These people are called maintainers and are specialized in a certain part of the Linux kernel, called a subsystem.
 
-With a project this big and that segmented, it is hard to guarantee the modifications applied to the code source do not break the kernel.
+With a project this big and that segmented, it is hard to guarantee the modifications applied to the code source do not break the kernel especially when, in its 4.6 version, it averaged 11600 lines added, 5800 removed, and 2000 modified per day\footnote{\url{https://www.linux.com/news/greg-kroah-hartman-gives-inside-look-largest-fastest-software-project-all}}.
 
-The Open Source Software biggest strength is in its openness. Everyone can audit the code to find security flaws or bugs and fix them or notify the community of these bugs.
+The Open Source Software biggest strength is in its openness. Everyone can audit the code to find security flaws or bugs and fix them or notify the community of these bugs. Most importantly, companies do not need to reinvent the wheel, they can reuse freely the most tried and tested software programs in the world.
+
+%TODO: patch submission, maintainers presentation, maintainers' trees' goals, merge window etc...
+% oppose to Linux kernel forks (linux-sunxi for example)
+
+%TODO: ePAPR?)
+
+The Device Tree is, as its name suggests, a tree of devices and is a representation of hardware devices and buses which are present in a board and are not discoverable at runtime. This file is compiled beside the Linux kernel with the Device Tree Compiler and a change in its code does neither affect the kernel nor requires a rebuild of the kernel. A Device Tree Blob is created once the Device Tree has been compiled and has to be used in conjunction with a compiled kernel or the kernel will not be able to boot. A Device Tree is specific to one board but can inherit components' definition from Device Trees includes.
+
+The Device Tree is a file organized like a tree, with a root node, bus nodes and devices nodes. The root node typically contains a \textit{cpus} node describing each CPU in the system, a \textit{memory} node defining the location and size of the RAM, an \textit{aliases} node specifying shortcuts to some nodes, and nodes describing SoC buses such as USB, i\textsuperscript{2}c or SPI and on-board devices such as LEDs, eMMC, SD card reader, Ethernet port or power regulators.
+
+Two kernels differ by their configuration file (which drivers to build inkernel or as modules for example), their targeted architecture and the Device Trees compiled with it.
 
 \subsection{Free Electrons' use case}
-Some of Free Electrons' clients ask help to upstream a driver to the Linux kernel source code. Since Linux is FOSS (Free and Open Source Software), everyone can modify the code of this driver to add functionality or to fix bugs but it can also introduce new bugs. Free Electrons' engineers need to continuously keep an eye on part of codes used by or developed for a client. Several clients also ask to follow the whole life-cycle of the project (from its early development stages to its discontinuity) so engineers have to keep track of all modifications of the kernel that might break the product.
+Some of Free Electrons' clients ask help to upstream a driver to the Linux kernel source code. Since Linux is FOSS (Free and Open Source Software), everyone can modify the code of this driver to add functionality or to fix bugs but it can also introduce new bugs because developers only test their code on the boards they own, often not the ones we own. Free Electrons' engineers need to continuously keep an eye on part of codes used by or developed for a client. Several clients also ask to follow the whole life-cycle of the project (from its early development stages to its discontinuity) so engineers have to keep track of all modifications of the kernel that might break the product.
 
 \section{State of the art}
 Since the kernel supports several thousands of different platforms, when a developer writes new code for the kernel, he cannot test his code on all the platforms and usually tests only on the platforms he owns. Before merging its code to the kernel source code, some users or other developers might test it on other platforms or in other configurations but it is rather rare. Furthermore, the only way to guarantee a modification works on all impacted platforms is to build the kernel in all its configurations and test on all these platforms if the kernel boots. This is extremely tedious and time consuming.
 
-As explained above, there is currently no way to automatically discover a regression in the kernel. The only way to detect a regression is when a user of the kernel performs an audit or is using the kernel in a certain configuration so that he discovers a bug.
+As explained above, there is currently no way to automatically discover a regression in the kernel. The only way to detect a regression is when a user of the kernel performs an audit or is using the kernel in a certain configuration so that he discovers a bug. There is however a useful software developed by Intel called 0-day\footnote{\url{https://01.org/lkp}} which is a building test robot. It takes patches from different mailing lists, applies them one by one to different branches and tests the Linux kernel can be properly built with the modifications included in the patch.
 
 It is the role of a maintainer to guarantee the stability and the working of the subsystem he's in charge. However, since he neither has all the platforms impacted by his subsystem, nor even knows how they actually work from a hardware point of view nor the time to test on all platforms, the only thing he can do is to look for common errors in the code and try to find corner cases.
-
-Because there is no current status of the kernel for each platform, when a user asks for help, the community or the maintainer has to check if the kernel is booting in the default configuration and then in the user's configuration to check if it is effectively a regression or if it is a mistake on user's side. This takes a lot of time and reduces the chance of having a quick answer.
 
 The main goal of KernelCI project is to implement a continuous integration in the kernel so build or boot failures are detected before reaching the end users. There already are several labs contributing to the project: several from Linaro and few from KernelCI founders. However, they are often expensive (i.e. the Linaro's lab uses several 500\$ APC PDU\footnote{Power Distribution Unit} systems to control the power of boards) and we do not want to put that much money in a lab so one of the challenges is to have working, cheap (but not hackish) solutions.
 
@@ -45,6 +54,8 @@ Continuous integration is made up of three different steps:
 \end{figure}
 
 \subsection{Building the kernel}
+
+Something has to trigger the building of the Linux kernel. It could be either changes in a git branch or in a whole git repository or patches sent to mailing lists. Most of these tracking means are not automatic and have to be scheduled to check for changes once in a while. We can tweak the granularity of the tracking by controlling the period of time between two scheduled checks.
 
 KernelCI is permanently tracking around a dozen of kernel git repositories. Each hour, KernelCI checks if the git repositories have been updated and if so, KernelCI builds from the last commit the kernel for ARM, ARM64 and x86 platforms in many configurations and their associated Device Trees. Then it stores all these builds in a publicly available storage\footnote{\url{https://storage.kernelci.org/}}.
 
@@ -246,3 +257,11 @@ As detailed before, we need a serial connection for each board (up to 50) in the
 At the end of my internship at Free Electrons, the company had a lab since May 2016 contributing to KernelCI with a pool of 20 boards (on a maximum of 50). Custom tests were infortunately not implemented due to a lack of time. However, our lab performed more than 60.000 boot tests in a three months span and our engineers and more globally maintainers are using the boot reports to help themselves for support.
 
 %TODO: Add pictures of the lab
+
+\subsection{Patches}
+
+\begin{itemize}
+  \item \href{https://review.linaro.org/#/q/Quentin\%20Schulz}{32 new LAVA device types configuration files},
+  \item \href{https://github.com/kernelci/lava-ci/commits/master?author=quentin.schulz\%40free-electrons.com&page=1}{33 new supported devices in KernelCI},
+  \item lava-ci documentation updates \href{https://github.com/kernelci/lava-ci/commit/058e9a72a752c9851c16a96aa51beafc9ce80128}{\#1}, \href{https://github.com/kernelci/lava-ci/pull/56}{\#2},
+\end{itemize}
