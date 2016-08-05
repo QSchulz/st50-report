@@ -140,6 +140,12 @@ We also wanted the lab to be easy to use and evolve. Sometimes, engineers will n
 Typically, considering the size limitations of the lab, our drawers would have a maximal size of 95x70cm. We determined we could put 8 small boards on a small drawer and up to 4 big boards on a big drawer. Since we went with drawers, we have to think of a system to limit the number of cables connecting the server and the hardwares on each drawer so it is easy to slide the drawer.\\
 Given the maximal height of the lab to be a bit less than 200cm and the minimal height allowed for a drawer to be 25cm, we know we can have 8 drawers in our lab. From the spreadsheet containing all the boards supposed to be in the lab, we eventually decided there would be 3 \textit{big drawers} for up to 12 \textit{big} boards and 5 \textit{small drawers} for up to 40 \textit{small} or \textit{medium-sized} boards.
 
+\begin{figure}
+  \centering
+  \includegraphics[width=0.7\textwidth]{lab.JPG}
+  \caption{Free Electrons' 8 drawers lab}
+\end{figure}
+
 To organize our drawers and ease their evolution, we need to cleanly guide the cables to each board while making it easy to remove them in any occasion. Some boards are also so tiny and light, the rigid cables connected to the board impose the place where the board will stay. Also, we need to keep the power supplies and other hardware materials in place. Therefore, we need an easy-to-remove way to guide cables and also maintain boards and heavy materials at a given place. We thought scratch bands were an excellent choice:
 
 \begin{itemize}
@@ -201,6 +207,11 @@ In \textit{small drawers}, up to 8 boards need a separate power supply. Professi
 The second option would need a power supply with enough amperage to power all boards at the same time. In the future, we may want to attach hard drives to some boards for cryptography or RAID tests for example. Spin-up of hard drives draws a lot of current so we have to add some amps to the minimal needed amperage.\\
 Amongst our boards some need 5 Volts inputs while other need 12 Volts inputs. This requirement would induce to have two different power supplies (one delivering 5V and the other 12V) or a power supply which can deliver both at the same time. When gathering information and experiences from different labs, Kevin Hilman, one of KernelCI's founders, told us he uses ATX power supplies to power both 5V and 12V boards. He splits both outputs and plugs them in an Ethernet-controlled relay to individually open or close the power circuit to each board. This is the best product we could think of to power the boards since desktop ATX power supplies often deliver a lot of current to power multiple graphic cards, hard drives and the processor. So we could use one ATX power supply per \textit{small drawer} to handle all the power for all boards in this drawer.
 
+\begin{figure}[H]
+  \includegraphics[width=\textwidth]{power_supply.JPG}
+  \caption{Splitting ATX power supply 5V, 12V and ground outputs}
+\end{figure}
+
 However, there is still one problem: an ATX power supply is always powered but does not always deliver power. This is a way to spare electricity when the desktop is not used thus not needing the ATX power supply to deliver power. When we press the power button on a desktop, it sends a signal to the ATX power supply to start delivering power. The boards in our \textit{small drawers} are not supposed to be powered with an ATX power supply so they do not know how to send this signal to the power supply. Moreover, the signal has to be sent on a separate wire which is not connected to any of these boards. This signal is called \textit{PS\_ON\#}\footnote{\url{http://www.formfactors.org/developer/specs/atx2\_2.pdf}} and is supposed to be applied to the 16\textsuperscript{th} pin (normally green wire) of the 24-pins connector of the power supply.\\
 When this pin is connected to the ground, the power supply turns on. Since the Ethernet-controlled relays make sure the power circuit to the boards are open when the boards are powered off, we can permanently turn on the power supply by putting the pin to the ground. However, it is different for boards which need a separate ATX power supply. In this case, the board is powered when the switch on the board is in the \textit{ON} position. This switch basically takes the ground from the power supply and connects it to the 16\textsuperscript{th} pin when it is in the \textit{ON} position. We cannot manually switch the board's switch each time we need to reset the power of the boards since LAVA needs to be autonomous. The solution is to split the ground, cut the green wire from the ATX power supply before the connector and plug both in the same Ethernet-controlled relay which will connect them together only when needed, thus powering the ATX power supply.
 
@@ -218,6 +229,27 @@ We might want in the future to perform speed tests on network interfaces of boar
 We settled for a 16-ports gigabit switch as the main switch since it connects 8 switches, the server and the ISP\footnote{Internet Service Provider} box.
 
 We obviously need network cables. We quickly calculated the maximal length of a link in a drawer is 1m while we need a minimum of 2m for cables connecting drawer's switches and the main switch and multiple very short cables for connecting switches in \textit{small drawers} and the Ethernet-controlled relays. Therefore we bought around 80 meters of network cables.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{big-drawer-scheme.png}
+  \caption{\textit{Big drawer} scheme}
+\end{figure}
+\begin{figure}[H]
+  \includegraphics[width=\textwidth]{big_drawer.JPG}
+  \caption{\textit{Big drawer} in the lab}
+\end{figure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{small-drawer-scheme.png}
+  \caption{\textit{Small drawer} scheme}
+\end{figure}
+\begin{figure}[H]
+  \includegraphics[width=\textwidth]{small_drawer.JPG}
+  \caption{\textit{Small drawer} in the lab}
+\end{figure}
+
+
 
 \subsection{Example of our process to add devices to the lab}
 
