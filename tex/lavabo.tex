@@ -15,6 +15,11 @@ Since LAVA already has all means to control the board, we can use the same tools
 
 \subsection{Implementation}
 
+\begin{figure}[H]
+  \includegraphics[width=\textwidth]{lavabo-scheme.png}
+  \caption{lavabo reuses LAVA tools and configuration files}
+\end{figure}
+
 lavabo is a two parts software: a client installed on all engineers' laptop and a server host on the same machine as LAVA. This allows us to use the server part as a bridge to the host to reuse the same tools as LAVA.
 
 All lavabo's logic is in the server part which takes care of calling the right tools directly on the server machine and making the right calls to LAVA's API. It controls the boards and interacts with the LAVA instance to reserve and release a board. The server side of lavabo will be executed everytime someone logs in the server machine with a certain user via SSH.
