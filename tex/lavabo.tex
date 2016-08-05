@@ -1,17 +1,15 @@
 \chapter{Lavabo - LAVA Board Overseer}
 \section{Context}
 
-Free Electrons sometimes owns only one copy of a board. We want to automatically test new kernels via LAVA and KernelCI on this board but we might also have to work once in a while on the said board. Before lavabo being developed, engineers had had to physically remove the board from the lab and replug all the cables on their desk. This is not an ideal process because, while the board is outside of the lab, the new kernels are not tested on it.
+Since our lab works in a completely autonomous manner thanks to LAVA, we wondered if we could take control of the lab remotely so anyone from Free Electrons could access the boards in the lab from anywhere. lavabo is born from this idea and its goal is to take full remote control of the boards as it is done in LAVA: interface with the serial, control the power supply and serve files to the board. This software also has to be fully compatible with LAVA.
 
-At the moment, we have two engineers teleworking far from our Toulouse offices. These engineers might as well work on the board we own only once meaning we have to send them by postal way. Some other engineers also telework from time to time due to business travel and in that case, they would have to take the board (and the needed cables and power supply) with them. Since our lab works in a completely autonomous manner, we wondered if we could not take control of the lab remotely so anyone from Free Electrons could access the boards in the lab from anywhere.
-
-The goal of lavabo is to take full remote control of the boards as it is done in LAVA: interface with the serial, control the power supply and serve files to the board. This software also has to be fully compatible with LAVA.
+This also find a meaning in Free Electrons sometimes owning only one copy of a board. We still want to automatically test new kernels via LAVA and KernelCI on this board but we might also have to work once in a while on the said board. Before lavabo being developed, engineers had had to physically remove the board from the lab and replug all the cables on their desk. This is not an ideal process because, while the board is outside of the lab, the new kernels are not tested on it. At the moment, we have two engineers teleworking far from our Toulouse offices. These engineers might as well work on the board we own only once meaning we have to send them by postal way. Some other engineers also telework from time to time due to business travel and in that case, they would have to take the board (and the needed cables and power supply) with them.
 
 \section{Project}
 
-If we want to take full control of a board outside of LAVA, we first have to notify LAVA the board is not available for new jobs until further notice. LAVA looks amongst its dispatchers for online and available devices and if no device is online, drops the jobs it wanted to perform on this device. If there is a device online but is busy, LAVA queues the job. LAVA has an API to interact with  we could use to \textit{put offline} or \textit{online} a board.
+As presented in the introduction, the goal of lavabo is to take full control of the board. However, LAVA does not yet allow such interaction with boards and thus lavabo needs to interact with boards without interfering with LAVA. If we want to take full control of a board outside of LAVA, we first have to notify LAVA the board is not available for new jobs until further notice. LAVA looks amongst its dispatchers for online and available devices and if no device is online, drops the jobs it wanted to perform on this device. If there is a device online but is busy, LAVA queues the job. LAVA has an API to interact with  we could use to \textit{put offline} or \textit{online} a board.
 
-Since LAVA already has all means to control the board, we can use the same tools used by LAVA and the configuration file of each board in lavabo to control the board.
+Since LAVA already has all means to control the board, we can use the same tools used by LAVA and the configuration file of each board in lavabo to control the board. However, we also need user authentication to deny access to a board when it is already used by an engineer.
 
 \subsection{Implementation}
 
