@@ -3,7 +3,7 @@
 \subsection{Linux}
 Linux is an operating system kernel (or simply kernel) created by Linus Torvalds and its source code was released in 1991 under a Free and Open Source license. After requests to remove the limitation on commercialization established by the current license, he ultimately released the source code under the GPL license\footnote{\url{https://www.kernel.org/pub/linux/kernel/Historic/old-versions/RELNOTES-0.12}} in 1992.
 
-The Linux kernel is the biggest Open Source software with its 21 millions lines of code, 4000 contributors and several thousands of supported architectures. Such a big project needs people which are garants of the quality of the code and the respect of different rules (such as the coding style for example). These people are called maintainers and are specialized in a certain part of the Linux kernel, called a subsystem.
+The Linux kernel is the biggest Open Source software with its 21 millions lines of code, 4000 contributors and several thousands of supported architectures. Such a big project needs people which are guarantors of the quality of the code and the respect of different rules (such as the coding style for example). These people are called maintainers and are specialized in a certain part of the Linux kernel, called a subsystem.
 
 With a project this big and that segmented, it is hard to guarantee the modifications applied to the code source do not break the kernel especially when, in its 4.6 version, it averaged 11600 lines added, 5800 removed, and 2000 modified per day\footnote{\url{https://www.linux.com/news/greg-kroah-hartman-gives-inside-look-largest-fastest-software-project-all}}.
 
@@ -14,7 +14,7 @@ The Open Source Software biggest strength is in its openness. Everyone can audit
 
 %TODO: ePAPR?)
 
-The Device Tree is, as its name suggests, a tree of devices and is a representation of hardware devices and buses which are present in a board and are not discoverable at runtime. This file is compiled beside the Linux kernel with the Device Tree Compiler and a change in its code does neither affect the kernel nor requires a rebuild of the kernel. A Device Tree Blob is created once the Device Tree has been compiled and has to be used in conjunction with a compiled kernel or the kernel will not be able to boot. A Device Tree is specific to one board but can inherit components' definition from Device Trees includes.
+One of the required files to make a Linux kernel boot is the Device Tree which is, as its name suggests, a tree of devices and is a representation of hardware devices and buses which are present in a board and are not discoverable at runtime. This file is compiled beside the Linux kernel with the Device Tree Compiler and a change in its code does neither affect the kernel nor requires a rebuild of the kernel. A Device Tree Blob is created once the Device Tree has been compiled and has to be used in conjunction with a compiled kernel or the kernel will not be able to boot. A Device Tree is specific to one board but can inherit components' definition from Device Trees includes.
 
 The Device Tree is a file organized like a tree, with a root node, bus nodes and devices nodes. The root node typically contains a \textit{cpus} node describing each CPU in the system, a \textit{memory} node defining the location and size of the RAM, an \textit{aliases} node specifying shortcuts to some nodes, and nodes describing SoC buses such as USB, i\textsuperscript{2}c or SPI and on-board devices such as LEDs, eMMC, SD card reader, Ethernet port or power regulators.
 
@@ -28,16 +28,16 @@ Since the kernel supports several thousands of different platforms, when a devel
 
 As explained above, there is currently no way to automatically discover a regression in the kernel. The only way to detect a regression is when a user of the kernel performs an audit or is using the kernel in a certain configuration so that he discovers a bug. There is however a useful software developed by Intel called 0-day\footnote{\url{https://01.org/lkp}} which is a building test robot. It takes patches from different mailing lists, applies them one by one to different branches and tests the Linux kernel can be properly built with the modifications included in the patch.
 
-It is the role of a maintainer to guarantee the stability and the working of the subsystem he's in charge. However, since he neither has all the platforms impacted by his subsystem, nor even knows how they actually work from a hardware point of view nor the time to test on all platforms, the only thing he can do is to look for common errors in the code and try to find corner cases.
+It is the role of a maintainer to guarantee the stability and the working of the subsystem he's in charge. However, since he hasn't all the platforms impacted by his subsystem, the only thing he can do is to look for common errors in the code and try to find corner cases.
 
 The main goal of KernelCI project is to implement a continuous integration in the kernel so build or boot failures are detected before reaching the end users. There already are several labs contributing to the project: several from Linaro and few from KernelCI founders. However, they are often expensive (i.e. the Linaro's lab uses several 500\$ APC PDU\footnote{Power Distribution Unit} systems to control the power of boards) and we do not want to put that much money in a lab so one of the challenges is to have working, cheap (but not hackish) solutions.
 
-At Free Electrons, we also love to contribute to free softwares and we are very proud to be part of the effort to bring continuous integration to the kernel.
+At Free Electrons, we also love to contribute to free software programs and we are very proud to be part of the effort to bring continuous integration to the kernel.
 
 \section{Project}
 \subsection{Continuous integration in Linux kernel}
 
-Continuous integration is the process of automated building and testing of a software when one or multiple changes have been made to its source code, and then reporting of the results. The main benefit of continuous integration is to detect as soon as possible regressions in the code so they could be identified and corrected quickly, idealy before being in a production environment.
+Continuous integration is the process of automated building and testing of a software when one or multiple changes have been made to its source code, and then reporting of the results. The main benefit of continuous integration is to detect as soon as possible regressions in the code so they could be identified and corrected quickly, ideally before being in a production environment.
 
 Because of Linux's well-known ability to run on numerous different platforms and the obvious impossibility for developers to test changes on all these platforms, continuous integration has a big role to play in Linux kernel development and maintenance.
 
@@ -65,7 +65,7 @@ KernelCI is not in charge of this part of continuous integration but is rather d
 
 \subsubsection{Software choices}
 
-At this moment, two softwares are known to work with KernelCI: Linaro Automated Validation Architecture (LAVA)\footnote{\url{http://www.linaro.org/initiatives/lava/}} and pyboot\footnote{\url{https://github.com/khilman/pyboot}}. pyboot is going deprecated so LAVA is highly preferred for new labs. LAVA was created early 2012 to meet Linaro's developers' needs to continuously test their work before delivering it to their client. Note that KernelCI does not solely interact with pyboot or LAVA since it offers an API\footnote{\url{https://api.kernelci.org/}}, so if none meets your needs, go ahead and make your own!
+At this moment, two software programs are known to work with KernelCI: Linaro Automated Validation Architecture (LAVA)\footnote{\url{http://www.linaro.org/initiatives/lava/}} and pyboot\footnote{\url{https://github.com/khilman/pyboot}}. pyboot is going deprecated so LAVA is highly preferred for new labs. LAVA was created early 2012 to meet Linaro's developers' needs to continuously test their work before delivering it to their client. Note that KernelCI does not solely interact with pyboot or LAVA since it offers an API\footnote{\url{https://api.kernelci.org/}}, so if none meets your needs, go ahead and make your own!
 
 \subsubsection{What is LAVA?}
 
@@ -128,7 +128,7 @@ After KernelCI has built the kernel, sent jobs to contributing labs and LAVA (or
 
 Our lab is supposed to take place in Free Electrons' offices in a 100cm wide space. The room in which the lab will take place is separated from the office by a 200cm high and 75cm wide door and we thought it would be a good idea to build the lab a little smaller so if we move out of this office a day, we do not have to completely disassemble it but rather slide it through the doors.
 
-Finally, Free Electrons' engineers filled a spreadsheet with all boards they want to have in the lab and their specificities regarding which connectors are used for the serial communication and the power supply. We reached a total of 48 boards to put into the lab. Amongst those boards, we can distinguish two different types:
+Finally, Free Electrons' engineers filled a spreadsheet with all boards they want to have in the lab and their particularities regarding which connectors are used for the serial communication and the power supply. We reached a total of 48 boards to put into the lab. Among those boards, we can distinguish two different types:
 \begin{itemize}
   \item boards which are powered by an ATX power supply,
   \item boards which are powered by chargers;
@@ -137,7 +137,7 @@ Finally, Free Electrons' engineers filled a spreadsheet with all boards they wan
 In addition to needing a full ATX power supply, the first type of boards often has a huge motherboard. These boards sometimes also embed extension ports such as PCI-e, making their height bigger. The biggest height we could find was 25cm for a board with a PCI-e device plugged in.
 
 We also wanted the lab to be easy to use and evolve. Sometimes, engineers will need to take a board out of the lab or to add one. The easier the process is, the better the lab is. Building the lab with drawers seemed to be the easiest, cheapest and quickest way to make our lab modular. Since we have two types of boards, one taking a lot of room in a drawer, we thought it would be a good idea to separate both types in different drawers. \textit{Big drawers} would host the boards which need a separate ATX power supply while the \textit{small drawers} would host the smallest boards.\\
-Typically, considering the size limitations of the lab, our drawers would have a maximal size of 95x70cm. We determined we could put 8 small boards on a small drawer and up to 4 big boards on a big drawer. Since we went with drawers, we have to think of a system to limit the number of cables connecting the server and the hardwares on each drawer so it is easy to slide the drawer.\\
+Typically, considering the size limitations of the lab, our drawers would have a maximal size of 95x70cm. We determined we could put 8 small boards on a small drawer and up to 4 big boards on a big drawer. Since we went with drawers, we have to think of a system to limit the number of cables connecting the server and the hardware components on each drawer so it is easy to slide the drawer.\\
 Given the maximal height of the lab to be a bit less than 200cm and the minimal height allowed for a drawer to be 25cm, we know we can have 8 drawers in our lab. From the spreadsheet containing all the boards supposed to be in the lab, we eventually decided there would be 3 \textit{big drawers} for up to 12 \textit{big} boards and 5 \textit{small drawers} for up to 40 \textit{small} or \textit{medium-sized} boards.
 
 \begin{figure}
@@ -176,15 +176,7 @@ Now we have to meet LAVA hardware requirements.
 
 \subsubsection{Connect to serial}
 
-Serial connections are mostly handled via USB on host side but there are many different connectors on target side. In our lab, we have 6 different connectors:
-\begin{itemize}
-  \item DE9,
-  \item microUSB,
-  \item miniUSB,
-  \item separate male pins,
-  \item separate female pins,
-  \item USB-B;
-\end{itemize}
+Serial connections are mostly handled via USB on host side but there are many different connectors on target side (in our lab, we have 6 different connectors: DE9, microUSB, miniUSB, separate male pins, separate female pins and USB-B).
 
 In a LAVA setup with several dispatchers, each dispatcher has to be physically connected to all of the boards it's in charge of. In our case, the server hosts the LAVA master and dispatcher all at once. Therefore, our server has to have a physical connection with each of the 50 boards present in the lab. The need for USB hubs is then obvious.
 
@@ -233,7 +225,7 @@ We obviously need network cables. We quickly calculated the maximal length of a 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.7\textwidth]{big-drawer-scheme.png}
-  \caption{\textit{Big drawer} scheme}
+  \caption{\textit{Big drawer} example scheme}
 \end{figure}
 \begin{figure}[H]
   \includegraphics[width=\textwidth]{big_drawer.JPG}
@@ -242,7 +234,7 @@ We obviously need network cables. We quickly calculated the maximal length of a 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.7\textwidth]{small-drawer-scheme.png}
-  \caption{\textit{Small drawer} scheme}
+  \caption{\textit{Small drawer} example scheme}
 \end{figure}
 \begin{figure}[H]
   \includegraphics[width=\textwidth]{small_drawer.JPG}
@@ -279,16 +271,14 @@ $ ./lava-job-runner.py --username LAVA_USERNAME --token LAVA_TOKEN --server LAVA
 \section{Challenges encountered}
 The first and most challenging problem encountered was to install LAVA whereas LAVA was migrating to a new model. For backward compatibility, LAVA has both models in the current code until it gets definitely removed in a few years. However, since LAVA developers are actively developing the new version, they did not take the time (at the time) to separate the old and new model's documentations. There were no way to distinguish which model the documentation was refering to. The main problem is KernelCI using only the old model. This cost me a lot of time to figure out why LAVA was not working in certain configurations or when following tutorials.
 
-Amongst the other challenges, I had to deal with bootloaders. One of the tasks was to find the correct addresses where to load the kernel, Device Tree Blob and rootfs images in the RAM. It is often in bootloader's default configuration but sometimes I had to read the User Manual of the SoC to find at which address starts the RAM. Sometimes, even this data is not available so I had to empirically guess the address of the RAM. For some boards, the bootloader was outdated and impossible to update. Some of these bootloaders did not have bootz, the boot method used to boot the images created when building the kernel. Instead, they have bootm which is used to boot uImages, a format which includes the kernel and Device Tree Blob in the same image and specifies to which address in the RAM to load the uImage. Some bootloaders did not have DHCP, so we had to set fixed IP ranges for bootloaders without DHCP support.
+Among the other challenges, I had to deal with bootloaders. One of the tasks was to find the correct addresses where to load the kernel, Device Tree Blob and rootfs images in the RAM. It is often in bootloader's default configuration but sometimes I had to read the User Manual of the SoC to find at which address starts the RAM. Sometimes, even this data is not available so I had to empirically guess the address of the RAM. For some boards, the bootloader was outdated and impossible to update. Some of these bootloaders did not have bootz, the boot method used to boot the images created when building the kernel. Instead, they have bootm which is used to boot uImages, a format which includes the kernel and Device Tree Blob in the same image and specifies to which address in the RAM to load the uImage. Some bootloaders did not have DHCP, so we had to set fixed IP ranges for bootloaders without DHCP support.
 
-One of the biggest problems I had to take care of was serial connection. This is the heart of the continuous integration since it is the only way to communicate with the board. Some boards like the Marvell RD-370 need a rising edge on a pin to boot and others lose their serial connection when resetting its power. For the first problem, we had to customize the board to bypass this limitation and for the second, infinitely reconnecting to the serial is an acceptabe workaround. However, we still have a problem with few boards which randomly close their serial connection without any reason. After that, we are able to connect to the serial connection again but it does not send any character. The only way to get it to work again is to physically replug the cable used by the serial connection. Unfortunately, we did not find yet a way to solve this bug.
+One of the biggest problems I had to take care of was serial connection. This is the heart of the continuous integration since it is the only way to communicate with the board. Some boards like the Marvell RD-370 need a rising edge on a pin to boot and others lose their serial connection when resetting its power. For the first problem, we had to customize the board to bypass this limitation and for the second, infinitely reconnecting to the serial is an acceptable workaround. However, we still have a problem with few boards which randomly close their serial connection without any reason. After that, we are able to connect to the serial connection again but it does not send any character. The only way to get it to work again is to physically re-plug the cable used by the serial connection. Unfortunately, we did not find yet a way to solve this bug.
 
 As detailed before, we need a serial connection for each board (up to 50) in the lab. However, the Linux kernel of our server refused to bind more than 13 USB devices when it was time to create a second drawer of boards. After some research, I found out that the culprit was the xHCI\footnote{\url{https://en.wikipedia.org/wiki/Extensible\_Host\_Controller\_Interface}} driver. In modern computers, it is possible to deactivate the support of xHCI in the BIOS but this option was not present in our server's BIOS. The solution to this problem was to rebuild and install a kernel for the server without the xHCI driver compiled. From that day, the number of USB devices is limited to 127 as in USB specification\footnote{\url{http://www.usb.org/developers/docs/usb\_31\_052016.zip}}.
 
 \section{Conclusion}
-At the end of my internship at Free Electrons, the company had a lab since May 2016 contributing to KernelCI with a pool of 20 boards (on a maximum of 50). Custom tests were infortunately not implemented due to a lack of time. However, our lab performed more than 60.000 boot tests in a three months span and our engineers and more globally maintainers are using the boot reports to help themselves for support.
-
-%TODO: Add pictures of the lab
+At the end of my internship at Free Electrons, the company had a lab since May 2016 contributing to KernelCI with a pool of 20 boards (on a maximum of 50). Custom tests were unfortunately not implemented due to a lack of time. However, our lab performed more than 60.000 boot tests in a three months span and our engineers and more globally maintainers are using the boot reports to help themselves for support.
 
 \subsection{Patches}
 
