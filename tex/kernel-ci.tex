@@ -9,10 +9,37 @@ With a project this big and that segmented, it is hard to guarantee the modifica
 
 The Open Source Software biggest strength is in its openness. Everyone can audit the code to find security flaws or bugs and fix them or notify the community of these bugs. Most importantly, companies do not need to reinvent the wheel, they can reuse freely the most tried and tested software programs in the world.
 
-%TODO: patch submission, maintainers presentation, maintainers' trees' goals, merge window etc...
-% oppose to Linux kernel forks (linux-sunxi for example)
+When one wants to upstream a code change in the Linux kernel source code, one has to follow a set of rules defined for the Linux kernel. This set of rules\footnote{\url{https://www.kernel.org/doc/Documentation/SubmittingPatches}} is made of different rules:
+\begin{itemize}
+  \item extensively describe the code changes,
+  \item separate all changes in small different \textit{patches},
+  \item check indentation, coding style, comments of patches,
+  \item take time to chose the persons to which the patches will be sent,
+  \item respond to review comments,
+  \item sign patches;
+\end{itemize}
 
-%TODO: ePAPR?)
+Once one has formatted its patches accordingly to the different rules, one has to send its patches for reviews to maintainers of the (multiple) subsystems impacted by the changes as well as their mailing lists.
+
+\begin{figure}[H]
+  \includegraphics[width=\textwidth]{kernel-merge.png}
+  \caption{Development schedule of the Linux kernel}
+\end{figure}
+
+The Linux kernel has a rather simple development schedule:
+\begin{itemize}
+  \item 2 weeks for the merge window,
+
+During these two weeks, patches validated by the community prior to this period are merged to the upstreaming versio of the Linux kernel.
+
+  \item 6 to 10 weeks for the bug-fixing window,
+
+During these few weeks, only important bug fixes and bug fixes for new features added during the merge window should be submitted to the community for the next version. This is also the period when the patches for new functionalities for the version after the next version are submitted.
+\end{itemize}
+
+Patches will be discussed via the mailing lists and once they are validated by maintainers, the latter will then merge the patches into their own git repository in branches destined for the Linux kernel version currently in development or the next one. The goal of these branches specific to each subsystem is to ease the merging of patches in the Linux kernel mainline version. Another git repository called linux-next\footnote{\url{https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git/}}, or simply next, is used to make intermediate test releases by automatically merging all subsystems' branches to the latest version of the Linux kernel. It allows to find merge failures and bugs before merging to the Linux kernel upstream version. During the merge window, Linus Torlads will merge all subsystem maintainers' git branches creating the first Release Candidate, or rc1, version of the next Linux kernel version.
+
+Some vendors work differently with the Linux kernel. They usually forks (make a copy) of the Linux kernel git repository and makes tremendous changes in the source code without sending the changes for reviews to the community. Often, they do not update regularly their version to match the Linux kernel latest version which results in a complete nightmare when the vendor finally decide to upstream their modifications. This induces also that a board might only work with the vendor Linux kernel which does not contain the Linux kernel new functionalities or bug fixes (such as security fixes).
 
 One of the required files to make a Linux kernel boot is the Device Tree which is, as its name suggests, a tree of devices and is a representation of hardware devices and buses which are present in a board and are not discoverable at runtime. This file is compiled beside the Linux kernel with the Device Tree Compiler and a change in its code does neither affect the kernel nor requires a rebuild of the kernel. A Device Tree Blob is created once the Device Tree has been compiled and has to be used in conjunction with a compiled kernel or the kernel will not be able to boot. A Device Tree is specific to one board but can inherit components' definition from Device Trees includes.
 
