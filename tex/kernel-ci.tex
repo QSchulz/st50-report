@@ -43,9 +43,22 @@ Patches will be discussed via the mailing lists and once they are validated by m
 
 Some vendors work differently with the Linux kernel. They usually forks (make a copy) of the Linux kernel git repository and makes tremendous changes in the source code without sending the changes for reviews to the community. Often, they do not update regularly their version to match the Linux kernel latest version which results in a complete nightmare when the vendor finally decide to upstream their modifications. This induces also that a board might only work with the vendor Linux kernel which does not contain the Linux kernel new functionalities or bug fixes (such as security fixes).
 
-\subsubsection{The Device Tree, a Boot related file}
+\subsubsection{Files built when compiling the Linux kernel}
 
-One of the required files to make a Linux kernel boot, beside the kernel and drivers, is the Device Tree which is, as its name suggests, a tree of devices and is a representation of hardware devices and buses which are present in a board and are not discoverable at runtime. This file is compiled beside the Linux kernel with the Device Tree Compiler and a change in its code does neither affect the kernel nor requires a rebuild of the kernel. A Device Tree Blob is created once the Device Tree has been compiled and has to be used in conjunction with a compiled kernel or the kernel will not be able to boot. A Device Tree is specific to one board but can inherit components' definition from Device Trees includes.
+When compiling the Linux kernel, some files are created:
+\begin{itemize}
+  \item the kernel image, which can be of different format, for example:
+
+\begin{itemize}
+  \item Image, which is the format for 64-bits ARM platforms,
+  \item zImage, which is the format for all other platforms,
+  \item uImage, which is a format specific to U-Boot bootloader, adding a header to specify the entry and load addresses in RAM of the kernel image;
+\end{itemize}
+
+  \item Device Tree Blobs, only created for ARM (32 or 64 bits) and PowerPC platforms;
+\end{itemize}
+
+The Device Tree, as its name suggests, is a tree of devices and a representation of hardware devices and buses which are present in a board and are not discoverable at runtime. This file is compiled beside the Linux kernel with the Device Tree Compiler and a change in its code does neither affect the kernel nor requires a rebuild of the kernel. A Device Tree Blob is created once the Device Tree has been compiled and has to be used in conjunction with a compiled kernel or the kernel will not be able to boot. A Device Tree is specific to one board but can inherit components' definition from Device Trees includes.
 
 The Device Tree is a file organized like a tree, with a root node, bus nodes and devices nodes. The root node typically contains a \textit{cpus} node describing each CPU in the system, a \textit{memory} node defining the location and size of the RAM, an \textit{aliases} node specifying shortcuts to some nodes, and nodes describing SoC buses such as USB, i\textsuperscript{2}c or SPI and on-board devices such as LEDs, eMMC, SD card reader, Ethernet port or power regulators.
 
@@ -294,7 +307,9 @@ The first and most challenging problem encountered was to install LAVA whereas L
 
 Among the other challenges, I had to deal with bootloaders. One of the tasks was to find the correct addresses where to load the kernel, Device Tree Blob and rootfs images in the RAM. It is often in bootloader's default configuration but sometimes I had to read the User Manual of the SoC to find at which address starts the RAM. Sometimes, even this data is not available so I had to empirically guess the address of the RAM. For some boards, the bootloader was outdated and impossible to update. Some of these bootloaders did not have bootz support, the boot method used to boot the images created when building the kernel. Instead, they have bootm support which is used to boot uImages, a format which includes the kernel and Device Tree Blob in the same image and specifies to which address in the RAM to load the uImage. Some bootloaders did not have DHCP, so we had to set fixed IP ranges for bootloaders without DHCP support.
 
-One of the biggest problems I had to take care of was serial connection. This is the heart of the continuous integration since it is the only way to communicate with the board. Some boards like the Marvell RD-370 need a rising edge on a pin to boot meaning we cannot avoid pressing the reset button between each boot. To work ou this problem, we had to customize the board (mainly swap resistors) to bypass this limitation. Some other boards lose their serial connection when resetting their power, problem we found acceptable to solve by infinitely reconnecting to the serial. However, we still have a problem with few boards which randomly close their serial connection without any reason. After that, we are able to connect to the serial connection again but it does not send any character. The only way to get it to work again is to physically re-plug the cable used by the serial connection. Unfortunately, we did not find yet a way to solve this bug.
+The biggest problems I had to take care of were board-specific problems.\\
+Some boards like the Marvell RD-370 need a rising edge on a pin to boot meaning we cannot avoid pressing the reset button between each boot. To work ou this problem, we had to customize the board (mainly swap resistors) to bypass this limitation.\\
+Some other boards lose their serial connection. This is the heart of the continuous integration since it is the only way to communicate with the board. Some lose it when resetting their power, problem we found acceptable to solve by infinitely reconnecting to the serial. However, we still have a problem with few boards which randomly close their serial connection without any reason. After that, we are able to connect to the serial connection again but it does not send any character. The only way to get it to work again is to physically re-plug the cable used by the serial connection. Unfortunately, we did not find yet a way to solve this bug.
 
 As detailed before, we need a serial connection for each board (up to 50) in the lab. However, the Linux kernel of our server refused to bind more than 13 USB devices when it was time to create a second drawer of boards. After some research, I found out that the culprit was the xHCI\footnote{\url{https://en.wikipedia.org/wiki/Extensible\_Host\_Controller\_Interface}} driver. In modern computers, it is possible to deactivate the support of xHCI in the BIOS but this option was not present in our server's BIOS. The solution to this problem was to rebuild and install a kernel for the server without the xHCI driver compiled. From that day, the number of USB devices is limited to 127 as in USB specification\footnote{\url{http://www.usb.org/developers/docs/usb\_31\_052016.zip}}.
 
