@@ -12,14 +12,14 @@
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.2\textwidth]{bootloader-spl.png}
-  \caption{Most common boot process from power on to the Linux kernel}
+  \caption{One example of boot process from power on to the Linux kernel}
 \end{figure}
 
-Most commonly, when a board is powered on, the processor loads a small embedded ROM code which will loads a bootloader in the SRAM limited in size. This bootloader, called SPL or Secondary Program Loader, will take care of basic hardware initialization (mainly DRAM) and the loading of a full size bootloader in DRAM with user interaction. This full size bootloader will then be able to starts the Linux kernel in RAM.
+In this example, when a board is powered on, the processor loads a small embedded ROM code which will loads a bootloader in the SRAM limited in size. This bootloader, called SPL or Secondary Program Loader, will take care of basic hardware initialization (mainly DRAM) and the loading of a full size bootloader in DRAM with user interaction. This full size bootloader will then be able to starts the Linux kernel in RAM.
 
 \item Root filesystem (rootfs):
 
-The Linux kernel follows the Filesystem Hierarchy Standard\footnote{\url{https://en.wikipedia.org/wiki/Filesystem\_Hierarchy\_Standard}} which states that everything is organized in directories in a tree-like hierarchy and all directories are subdirectories of the "/" (root) directory. Unlike Microsoft Windows which creates drives for each filesystem, the Linux kernel uses a subdirectory of the root directory to mount the filesystem. The root filesystem contains the files needed for booting the system and is required for mounting other filesystems, thus, without a root filesystem, the Linux kernel will never be able to boot.
+The Linux kernel follows the Filesystem Hierarchy Standard\footnote{\url{https://en.wikipedia.org/wiki/Filesystem\_Hierarchy\_Standard}} which states that everything is organized in directories in a tree-like hierarchy and all directories are subdirectories of the "/" (root) directory. Unlike Microsoft Windows which creates drives for each filesystem, the Linux kernel uses a subdirectory of the root directory to mount the filesystem. The root filesystem contains the files needed for booting the system and is required for mounting other filesystems, thus, without a root filesystem, the Linux kernel will boot but hang just after, making the board unusable for the user.
 
 \item Mainline, upstream:
 
@@ -27,6 +27,6 @@ Refers to the official current version of a software - the Linux kernel for exam
 
 \item User space:
 
-The Linux kernel with every tool used to schedule programs or directly interacts with the hardware runs in kernel space. Programs executed by users without privileges are run in user space and uses tools from the kernel space as an abstraction for the hardware communication.
+The Linux kernel - with every tool used to schedule programs or directly interacts with the hardware - runs in kernel space. Programs executed by users are run in user space and uses tools from the kernel space as an abstraction for the hardware communication.
 
 \end{itemize}
